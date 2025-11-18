@@ -1,74 +1,64 @@
-<html lang="id">
-const p = create('p', {class:'lead'}, 'Buat akun baru (disimpan di browser).');
+<html lang="en">
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Mood Music Login</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<div class="color-toggle">
+<input type="color" id="themeColor" />
+</div>
 
 
-const form = create('form');
-form.innerHTML = `
-<label for="u">Username (tanpa spasi)</label>
-<input id="u" name="u" type="text" pattern="\\S+" required />
-<label for="n">Nama tampilan</label>
-<input id="n" name="n" type="text" />
-<label for="p">Password (min 6)</label>
-<input id="p" name="p" type="password" minlength="6" required />
-<div style="height:10px"></div>
-`;
-const btnRow = create('div', {class:'row'});
-const createBtn = create('button', {}, 'Buat akun');
-const backBtn = create('button', {type:'button', onClick: renderLogin, class:'linkbtn'}, 'Kembali');
-btnRow.appendChild(createBtn); btnRow.appendChild(backBtn);
-form.appendChild(btnRow);
+<div class="container" id="container">
+<div class="form-container sign-in-container">
+<form id="loginForm">
+<h1>Login</h1>
+<input type="text" id="loginUser" placeholder="Username" required />
+<input type="password" id="loginPass" placeholder="Password" required />
+<button type="submit">Masuk</button>
+<p class="switch" id="toRegister">Buat akun baru</p>
+<p class="switch" id="toChangePass">Ganti password</p>
+</form>
+</div>
 
 
-form.addEventListener('submit', e=>{
-e.preventDefault();
-const u = form.u.value.trim();
-const n = form.n.value.trim();
-const p = form.p.value;
-const users = loadUsers();
-if(users[u]){ showMessage('Username sudah terpakai', 'error'); return }
-users[u] = {password: p, name: n || u};
-saveUsers(users);
-showMessage('Akun dibuat. Silakan masuk.', 'success');
-setTimeout(renderLogin, 700);
-});
+<div class="form-container register-container">
+<form id="registerForm">
+<h1>Register</h1>
+<input type="text" id="regUser" placeholder="Username" required />
+<input type="text" id="regName" placeholder="Nama" required />
+<input type="password" id="regPass" placeholder="Password" required />
+<button type="submit">Daftar</button>
+<p class="switch" id="toLoginFromReg">Sudah punya akun?</p>
+</form>
+</div>
 
 
-app.appendChild(h); app.appendChild(p); app.appendChild(form);
-}
+<div class="form-container change-pass-container">
+<form id="changePassForm">
+<h1>Ganti Password</h1>
+<input type="text" id="chgUser" placeholder="Username" required />
+<input type="password" id="oldPass" placeholder="Password Lama" required />
+<input type="password" id="newPass" placeholder="Password Baru" required />
+<button type="submit">Ubah</button>
+<p class="switch" id="toLoginFromChg">Kembali ke Login</p>
+</form>
+</div>
+</div>
 
 
-function renderDashboard(){
-const session = getSession();
-if(!session || !session.username){ renderLogin(); return }
-app.innerHTML = '';
-const h = create('h1', {}, `Halo, ${session.name}`);
-const p = create('p', {class:'lead'}, 'Ini dashboard sederhana setelah login.');
+<div class="popup" id="popup">
+<div class="popup-content">
+<p id="popupText"></p>
+<input type="text" id="moodInput" placeholder="Tulis suasana hati..." />
+<button id="moodSubmit">Cari Playlist</button>
+</div>
+</div>
 
 
-const dash = create('div', {class:'dashboard'});
-const info = create('div', {}, `<div class="small muted">Masuk sebagai <strong>${session.username}</strong></div><div class="small muted">Waktu: ${new Date(session.loggedAt).toLocaleString()}</div>`);
-const logout = create('button', {onClick: ()=>{ clearSession(); renderLogin(); }}, 'Keluar');
+<div class="playlist" id="playlist"></div>
 
 
-dash.appendChild(info);
-dash.appendChild(logout);
-
-
-app.appendChild(h); app.appendChild(p); app.appendChild(dash);
-
-
-const manage = create('div', {class:'small muted'}, 'Opsi: Anda dapat membuat akun baru atau menghapus akun melalui console browser (demo).');
-app.appendChild(manage);
-}
-
-
-// --- On load: check session ---
-(function start(){
-const s = getSession();
-if(s && s.username) renderDashboard(); else renderLogin();
-})();
-
-
-</script>
+<script src="script.js"></script>
 </body>
 </html>
