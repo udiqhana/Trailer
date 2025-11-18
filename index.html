@@ -1,0 +1,74 @@
+<html lang="id">
+const p = create('p', {class:'lead'}, 'Buat akun baru (disimpan di browser).');
+
+
+const form = create('form');
+form.innerHTML = `
+<label for="u">Username (tanpa spasi)</label>
+<input id="u" name="u" type="text" pattern="\\S+" required />
+<label for="n">Nama tampilan</label>
+<input id="n" name="n" type="text" />
+<label for="p">Password (min 6)</label>
+<input id="p" name="p" type="password" minlength="6" required />
+<div style="height:10px"></div>
+`;
+const btnRow = create('div', {class:'row'});
+const createBtn = create('button', {}, 'Buat akun');
+const backBtn = create('button', {type:'button', onClick: renderLogin, class:'linkbtn'}, 'Kembali');
+btnRow.appendChild(createBtn); btnRow.appendChild(backBtn);
+form.appendChild(btnRow);
+
+
+form.addEventListener('submit', e=>{
+e.preventDefault();
+const u = form.u.value.trim();
+const n = form.n.value.trim();
+const p = form.p.value;
+const users = loadUsers();
+if(users[u]){ showMessage('Username sudah terpakai', 'error'); return }
+users[u] = {password: p, name: n || u};
+saveUsers(users);
+showMessage('Akun dibuat. Silakan masuk.', 'success');
+setTimeout(renderLogin, 700);
+});
+
+
+app.appendChild(h); app.appendChild(p); app.appendChild(form);
+}
+
+
+function renderDashboard(){
+const session = getSession();
+if(!session || !session.username){ renderLogin(); return }
+app.innerHTML = '';
+const h = create('h1', {}, `Halo, ${session.name}`);
+const p = create('p', {class:'lead'}, 'Ini dashboard sederhana setelah login.');
+
+
+const dash = create('div', {class:'dashboard'});
+const info = create('div', {}, `<div class="small muted">Masuk sebagai <strong>${session.username}</strong></div><div class="small muted">Waktu: ${new Date(session.loggedAt).toLocaleString()}</div>`);
+const logout = create('button', {onClick: ()=>{ clearSession(); renderLogin(); }}, 'Keluar');
+
+
+dash.appendChild(info);
+dash.appendChild(logout);
+
+
+app.appendChild(h); app.appendChild(p); app.appendChild(dash);
+
+
+const manage = create('div', {class:'small muted'}, 'Opsi: Anda dapat membuat akun baru atau menghapus akun melalui console browser (demo).');
+app.appendChild(manage);
+}
+
+
+// --- On load: check session ---
+(function start(){
+const s = getSession();
+if(s && s.username) renderDashboard(); else renderLogin();
+})();
+
+
+</script>
+</body>
+</html>
